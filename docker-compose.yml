@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sentinel
+      POSTGRES_PASSWORD: sentinel
+      POSTGRES_DB: sentinel
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel -d sentinel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      SENTINEL_DATABASE_URL: postgresql+asyncpg://sentinel:sentinel@db:5432/sentinel
+      # Built-in demo API at /demo; demo endpoints are created on first boot.
+      SENTINEL_ENABLE_DEMO_TARGET: "true"
+      SENTINEL_SEED_DEMO: "true"
+      SENTINEL_PUBLIC_BASE_URL: http://localhost:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes:
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  pgdata:

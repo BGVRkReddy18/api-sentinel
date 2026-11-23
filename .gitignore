@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.db
+.DS_Store
+.idea/
+.vscode/
+frontend/node_modules/
+app/static/assets/
+Claude outputs/

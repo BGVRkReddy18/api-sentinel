@@ -1,0 +1,40 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Free web service + external free PostgreSQL (Supabase). See DEPLOY.md.
+services:
+  - type: web
+    name: api-sentinel
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /health/live
+    autoDeploy: true
+    envVars:
+      - key: SENTINEL_DATABASE_URL
+        sync: false # paste your Supabase session-pooler URL in the Render dashboard
+      - key: SENTINEL_API_KEY
+        generateValue: true # random admin key; copy it from the dashboard to log in to the UI
+      - key: SENTINEL_ENVIRONMENT
+        value: production
+      - key: SENTINEL_BLOCK_PRIVATE_TARGETS
+        value: "true"
+      - key: SENTINEL_ENABLE_DEMO_TARGET
+        value: "true"
+      - key: SENTINEL_SEED_DEMO
+        value: "true"
+      - key: SENTINEL_RETENTION_DAYS
+        value: "7" # keeps the free 500 MB database comfortably small
+      - key: SENTINEL_DB_POOL_SIZE
+        value: "5"
+      - key: SENTINEL_DB_MAX_OVERFLOW
+        value: "3"
+      - key: SENTINEL_MAX_CONCURRENT_CHECKS
+        value: "25"
+      - key: SENTINEL_ALERT_WEBHOOK_URL
+        sync: false # optional: Slack or Discord incoming-webhook URL
+      # Email alerts via Brevo's HTTPS API (Render free blocks SMTP ports). See DEPLOY.md step 5.
+      - key: SENTINEL_EMAIL_PROVIDER
+        value: brevo
+      - key: SENTINEL_BREVO_API_KEY
+        sync: false
+      - key: SENTINEL_EMAIL_FROM
+        sync: false # the sender address you verified in Brevo

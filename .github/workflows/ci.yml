@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sentinel
+          POSTGRES_PASSWORD: sentinel
+          POSTGRES_DB: sentinel_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sentinel"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PG_URL: postgresql+asyncpg://sentinel:sentinel@localhost:5432/sentinel_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Migrations apply and roll back cleanly
+        env:
+          SENTINEL_DATABASE_URL: ${{ env.PG_URL }}
+        run: |
+          alembic upgrade head
+          alembic downgrade base
+          alembic upgrade head
+          alembic downgrade base
+
+      - name: Fast suite (SQLite)
+        run: pytest -m "not postgres" -q
+
+      - name: Full suite with coverage (PostgreSQL)
+        env:
+          TEST_DATABASE_URL: ${{ env.PG_URL }}
+        run: pytest --cov --cov-report=term-missing --cov-fail-under=80
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+
+  docker:
+    needs: [test, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t api-sentinel:${{ github.sha }} .
