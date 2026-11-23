@@ -64,7 +64,8 @@ def demo_endpoints(base_url: str) -> list[dict]:
     ]
 
 
-# Real public APIs (no key needed). Intervals respect each provider's rate limits.
+# Real public APIs (no key needed). Avoid APIs with per-IP rate limits (GitHub, CoinGecko,
+# Open-Meteo): cloud hosts share outbound IPs, so those limits are exhausted by other tenants.
 PUBLIC_APIS: list[dict] = [
     {
         "name": "jsonplaceholder-create-post",
@@ -77,23 +78,22 @@ PUBLIC_APIS: list[dict] = [
         "interval_seconds": 120,
     },
     {
-        "name": "open-meteo-weather",
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=17.38&longitude=78.48&current_weather=true",
-        "expected_body_contains": "current_weather",
+        "name": "hacker-news-api",
+        "url": "https://hacker-news.firebaseio.com/v0/maxitem.json",
+        "interval_seconds": 120,
+    },
+    {
+        "name": "chuck-norris-jokes",
+        "url": "https://api.chucknorris.io/jokes/random",
+        "expected_body_contains": "value",
+        "interval_seconds": 120,
+    },
+    {
+        "name": "zippopotam-postal",
+        "url": "https://api.zippopotam.us/in/500001",
+        "expected_body_contains": "places",
         "max_latency_ms": 1500,
-        "interval_seconds": 120,
-    },
-    {
-        "name": "coingecko-ping",
-        "url": "https://api.coingecko.com/api/v3/ping",
-        "expected_body_contains": "gecko_says",
-        "interval_seconds": 120,
-    },
-    {
-        "name": "github-api",
-        "url": "https://api.github.com/",
-        "expected_body_contains": "current_user_url",
-        "interval_seconds": 300,
+        "interval_seconds": 180,
     },
     {
         "name": "wikipedia-rest",
