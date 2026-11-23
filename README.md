@@ -5,13 +5,15 @@ clock, streams every result to a live React dashboard over WebSockets, tracks up
 latency, detects latency anomalies with a robust statistical model, watches TLS certificates, and
 alerts Slack/Discord when something breaks or recovers. It also publishes a public status page.
 
-![CI](https://github.com/<your-username>/api-sentinel/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/BGVRkReddy18/api-sentinel/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-async-009688)
 ![React](https://img.shields.io/badge/React-19-61dafb)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
 
-**Live demo:** `https://<your-app>.onrender.com` · **Status page:** `https://<your-app>.onrender.com/status`
+**Live demo:** [api-sentinel-zmen.onrender.com](https://api-sentinel-zmen.onrender.com) · **Status page:** [/status](https://api-sentinel-zmen.onrender.com/status) · **API docs:** [/docs](https://api-sentinel-zmen.onrender.com/docs)
+
+> Hosted on Render's free tier: the first load after a quiet period can take ~30 s while the server wakes up.
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -92,7 +94,7 @@ flowchart LR
 ## Quick start (local)
 
 ```bash
-git clone https://github.com/<your-username>/api-sentinel.git && cd api-sentinel
+git clone https://github.com/BGVRkReddy18/api-sentinel.git && cd api-sentinel
 docker compose up -d --build        # Postgres, API + dashboard, Prometheus, Grafana
 ```
 

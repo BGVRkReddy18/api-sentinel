@@ -98,15 +98,15 @@ If Render ever restarts the service, the self-monitoring traffic resumes as soon
 safety net, add a free external ping:
 
 1. <https://cron-job.org> → sign up → **Create cronjob**.
-2. URL: `https://<your-app>.onrender.com/health/live`, schedule **every 10 minutes**.
+2. URL: `https://api-sentinel-zmen.onrender.com/health/live`, schedule **every 10 minutes**.
 
 ## 7. Share it
 
 | Link | Use it for |
 |---|---|
-| `https://<your-app>.onrender.com/` | Live dashboard (put it on your resume) |
-| `https://<your-app>.onrender.com/status` | Public status page |
-| `https://<your-app>.onrender.com/docs` | Interactive API docs |
+| `https://api-sentinel-zmen.onrender.com/` | Live dashboard (put it on your resume) |
+| `https://api-sentinel-zmen.onrender.com/status` | Public status page |
+| `https://api-sentinel-zmen.onrender.com/docs` | Interactive API docs |
 
 **Demo script for interviews:** open the dashboard, go to Settings → **Take it down**, and switch back
 to Overview. Within about 40 s, `demo-orders` turns red, a DOWN alert pops up live, and the status
