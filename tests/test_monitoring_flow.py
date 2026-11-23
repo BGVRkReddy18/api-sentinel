@@ -172,7 +172,10 @@ async def test_anomaly_alert_auto_resolves_when_latency_normalises(app, client, 
 
     def outcome(minutes: int, latency: float) -> CheckOutcome:
         return CheckOutcome(
-            checked_at=base + timedelta(minutes=minutes), is_success=True, status_code=200, response_time_ms=latency
+            checked_at=base + timedelta(minutes=minutes),
+            is_success=True,
+            status_code=200,
+            response_time_ms=latency,
         )
 
     for i in range(15):

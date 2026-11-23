@@ -14,7 +14,7 @@ import logging
 from datetime import datetime, timedelta
 from urllib.parse import urlsplit
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.clock import as_utc, utcnow
@@ -166,9 +166,15 @@ class MonitorService:
 
             # Latency back to normal -> close any open anomaly alert (they must not pile up).
             if outcome.is_success and outcome.response_time_ms is not None and not anomaly.is_anomaly:
-                open_anomaly = await self._open_alert(session, endpoint.id, AlertKind.LATENCY_ANOMALY)
-                if open_anomaly is not None:
-                    open_anomaly.resolved_at = outcome.checked_at
+                await session.execute(
+                    update(Alert)
+                    .where(
+                        Alert.endpoint_id == endpoint.id,
+                        Alert.kind == AlertKind.LATENCY_ANOMALY,
+                        Alert.resolved_at.is_(None),
+                    )
+                    .values(resolved_at=outcome.checked_at)
+                )
 
             if (
                 anomaly.is_anomaly

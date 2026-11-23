@@ -48,7 +48,7 @@ async def _guard_target(settings: Settings, url: str) -> None:
     try:
         await ensure_public_target(url)
     except UnsafeTargetError as exc:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f"unsafe target: {exc}") from None
+        raise HTTPException(422, detail=f"unsafe target: {exc}") from None
 
 
 def _publish(events: EventBus, action: str, endpoint: Endpoint) -> None:
